@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        <%=(locals.title) ? title :''%>
+    </title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="/../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/../font-awesome/css/font-awesome.min.css">
+
+    <!--<link rel="stylesheet" href="/../css/form-elements.css">
+    <link rel="stylesheet" href="/../css/style.css">-->
+    <style type="text/css">
+        body {
+            font-family: "Lato", sans-serif;
+            overflow: hidden;
+        }
+
+        #main {
+            width: 100%;
+            height: 100%;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+        }
+
+        .headerbar {
+            /*background-color: #4f9c8b;*/
+            background: linear-gradient(to bottom, #4682B4 50%, #87CEFA 100%);
+            color: white;
+            font-size: 25px;
+            left: 0px;
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            z-index: 7;
+            height: 50px;
+            padding-top: 5px;
+        }
+
+        .logout {
+            /*background-color: #4f9c8b;*/
+            background: linear-gradient(to bottom, #4682B4 50%, #87CEFA 100%);
+            color: red;
+            font-size: 25px;
+            right: 10px;
+            position: absolute;
+            top: 0px;
+            z-index: 7;
+            height: 50px;
+            padding-top: 5px;
+            text-decoration: active;
+        }
+
+        #googleMap {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            overflow: hidden;
+        }
+
+        .rightpanel {
+            background-color: white;
+            position: absolute;
+            z-index: 7;
+            padding: 10px;
+            top: 50px;
+            right: 0px;
+            height: 100%;
+        }
+
+    </style>
+</head>
+
+<body data-locations="<%=locals.docsJSON%>">
+    <div id="main">
+        <span class="text-left headerbar" style="color: white; font-size: 25px; font-family: Calibri;
+                                                  font-weight: bolder; padding-left: 5px; text-shadow: 1px 1px 1px #000;">
+            <%=(locals.title) ? title :''%>
+        </span>
+        <span><a class="logout" href="/"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
+        <div class="rightpanel">
+            <form class="form-horizontal registration-form" method="post" action="/showrider">
+                <input type="hidden" id="driverid" name="driverid">
+                <!--<div class="form-group">
+                    <label for="message" class="control-label col-xs-4">Remarks</label>
+                    <div class="col-xs-8">
+                        <textarea class="form-control" name="message" id="message" placeholder="Message" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-4">Est. Travel Cost</label>
+                    <div class="col-xs-8">
+                        <input type="text" class="form-control" name="estcost" id="estcost">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        <input type="submit" class="btn btn-danger btn-block" value="Submit" id="btnsubmit">
+                    </div>
+                </div>
+                <hr>-->
+                <div class="data-table">
+                    <h3>Requests</h3>
+                    <table border="1" cellpadding="7" cellspacing="7">
+                        <tr>
+                            <th width="30px">Id</th>
+                            <th width="70px">Name</th>
+                            <th width="200px">Message</th>
+                            <th width="200px">Remarks</th>
+                            <th width="150px">Est.Cost</th>
+                            <th>Action</th>
+                        </tr>
+
+                        <% if(data.length){
+
+                            for(var i = 0;i < data.length;i++) { %>
+
+                            <tr valign="top">
+                                <td>
+                                    <%=data[i].ID%>
+                                        <input type="hidden" id="tripid" name="tripid" value="<%=data[i].ID%>">
+                                </td>
+                                <td>
+                                    <%=data[i].RiderName%>
+                                </td>
+                                <td>
+                                    <%=data[i].RiderMsg%>
+                                </td>
+                                <td>
+                                    <textarea class="form-control" name="message" id="message" placeholder="Remarks" rows="3"></textarea>
+                                </td>
+                                <td>
+                                    <input type="text" class="form-control" name="estcost" id="estcost">
+                                </td>
+                                <td>
+                                    <!--<a class="a-inside edit" href="showrider.ejs">Save</a>-->
+                                    <input type="submit" class="btn btn-danger btn-block" value="Submit" id="btnsubmit">
+                                </td>
+                            </tr>
+                            <% }
+
+                        }else{ %>
+                                <tr>
+                                    <td colspan="6">No Requests</td>
+                                </tr>
+                                <% } %>
+                    </table>
+                </div>
+            </form>
+            <hr>
+            <iframe src="/showdriveraccept" style="width: 100%; height: 100%" border="0"></iframe>
+        </div>
+        <div id="googleMap"></div>
+    </div>
+</body>
+
+</html>
+<script src="/../js/jquery-1.11.1.min.js"></script>
+<script src="/../js/jquery.datetimepicker.js"></script>
+<script type="text/javascript">
+    var user = "M30.933,32.528c-0.146-1.612-0.09-2.737-0.09-4.21c0.73-0.383,2.038-2.825,2.259-4.888c0.574-0.047,1.479-0.607,1.744-2.818  c0.143-1.187-0.425-1.855-0.771-2.065c0.934-2.809,2.874-11.499-3.588-12.397c-0.665-1.168-2.368-1.759-4.581-1.759  c-8.854,0.163-9.922,6.686-7.981,14.156c-0.345,0.21-0.913,0.878-0.771,2.065c0.266,2.211,1.17,2.771,1.744,2.818  c0.22,2.062,1.58,4.505,2.312,4.888c0,1.473,0.055,2.598-0.091,4.21C19.367,37.238,7.546,35.916,7,45h38  C44.455,35.916,32.685,37.238,30.933,32.528z";
+    //var colors = ["#38c6f3", "#ff4864", "#428bca", "#166048", "#ff0000", "#512411", "#e3af0c"];
+    function initMap() {
+        //timeStamp1 = new Date();
+        var mapProp = {
+            center: new google.maps.LatLng(42.291707,-85.587229),
+            zoom: 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: false,
+            scaleControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            rotateControl: false,
+            fullscreenControl: false
+        };
+
+        map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+        var markerImageRed = {
+            path: user,
+            //url: 'images/ic_sedan_topview.png',
+            scaledSize: new google.maps.Size(30, 60), // size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(10, 25), // anchor
+            rotation: 0,
+            fillColor: "#ff0000",
+            fillOpacity: 1,
+            scale: .4,
+            //strokeColor: "#606060",
+            strokeOpacity: .7
+        };
+
+        var markerImageGreen = {
+            path: user,
+            //url: 'images/ic_sedan_topview.png',
+            scaledSize: new google.maps.Size(30, 60), // size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(10, 25), // anchor
+            rotation: 0,
+            fillColor: "#166048",
+            fillOpacity: 1,
+            scale: .4,
+            //strokeColor: "#606060",
+            strokeOpacity: .7
+        };
+
+        //debugger;
+        var coordinates = JSON.parse($('body').attr('data-locations'));
+        if (coordinates[0].length > 0) {
+            for (var i = 0; i <= coordinates[0].length - 1; i++) {
+                var Point = new google.maps.LatLng(coordinates[0][i].Location.split(',')[0], coordinates[0][i].Location.split(',')[1]);
+                var Marker = new google.maps.Marker({
+                    draggable: false,
+                    map: map
+                });
+                Marker.setPosition(Point);
+                if (coordinates[0][i].RiderId != null)
+                    Marker.setIcon(markerImageGreen);
+                else
+                    Marker.setIcon(markerImageRed);
+            }
+        }
+    }
+
+    var qsParm = new Array();
+
+    function qs() {
+        debugger;
+        var query = window.location.pathname.substring(1);
+        var parms = query.split('/');
+        /*for (var i = 0; i < parms.length; i++) {
+            var pos = parms[i].indexOf('=');
+            if (pos > 0) {
+                var key = parms[i].substring(0, pos);
+                var val = parms[i].substring(pos + 1);
+                qsParm[key] = val;
+            }
+        }*/
+        if (parms.length > 0) {
+            $("#driverid").val(parms[parms.length - 1]);
+            return true;
+        } else {
+            //window.location.href = 'VisitorRequest.html';
+            return false;
+        }
+    }
+
+    $(document).ready(function() {
+        qs();
+    });
+
+</script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAvCB0fJALK-4VaEiubgiVYuh-pJxNGvH0&callback=initMap&libraries=geometry,drawing" async defer></script>

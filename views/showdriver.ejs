@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+        <%=(locals.title) ? title :''%>
+    </title>
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Roboto:400,100,300,500">
+    <link rel="stylesheet" href="/../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/../font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/../css/jquery.datetimepicker.css">
+    <!--<link rel="stylesheet" href="/../css/form-elements.css">
+    <link rel="stylesheet" href="/../css/style.css">-->
+    <style type="text/css">
+        body {
+            font-family: "Lato", sans-serif;
+            overflow: hidden;
+        }
+
+        #main {
+            width: 100%;
+            height: 100%;
+            left: 0px;
+            top: 0px;
+            position: absolute;
+        }
+
+        .headerbar {
+            /*background-color: #4f9c8b;*/
+            background: linear-gradient(to bottom, #4682B4 50%, #87CEFA 100%);
+            color: white;
+            font-size: 25px;
+            left: 0px;
+            position: absolute;
+            top: 0px;
+            width: 100%;
+            z-index: 7;
+            height: 50px;
+            padding-top: 5px;
+        }
+
+        .logout {
+            /*background-color: #4f9c8b;*/
+            background: linear-gradient(to bottom, #4682B4 50%, #87CEFA 100%);
+            color: red;
+            font-size: 25px;
+            right: 10px;
+            position: absolute;
+            top: 0px;
+            z-index: 7;
+            height: 50px;
+            padding-top: 5px;
+            text-decoration: active;
+        }
+
+        #googleMap {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            overflow: hidden;
+        }
+
+        .rightpanel {
+            background-color: white;
+            position: absolute;
+            z-index: 7;
+            padding: 10px;
+            top: 50px;
+            right: 0px;
+            height: 100%;
+        }
+
+    </style>
+</head>
+
+<body data-locations="<%=locals.docsJSON%>">
+    <div id="main">
+        <span class="text-left headerbar" style="color: white; font-size: 25px; font-family: Calibri;
+                                                  font-weight: bolder; padding-left: 5px; text-shadow: 1px 1px 1px #000;">
+            <%=(locals.title) ? title :''%>
+        </span>
+        <span><a class="logout" href="/"><i class="fa fa-power-off" aria-hidden="true"></i></a></span>
+        <div class="rightpanel">
+            <form class="form-horizontal registration-form" method="post" action="/showdriver">
+                <input type="hidden" id="id" name="id">
+                <div class="form-group">
+                    <label for="message" class="control-label col-xs-4">Message</label>
+                    <div class="col-xs-8">
+                        <textarea class="form-control" name="message" id="message" placeholder="Message" rows="5"></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-xs-4">Date</label>
+                    <div class="col-xs-8">
+                        <input type="text" class="form-control" name="datetime" id="datetime">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-xs-offset-2 col-xs-8">
+                        <input type="submit" class="btn btn-danger btn-block" value="Request" id="btnsubmit">
+                    </div>
+                </div>
+            </form>
+            <hr>
+            <form class="form-horizontal registration-form" method="post" action="/showdriver/accept">
+                <div class="data-table">
+                    <h3>Accepts</h3>
+                    <table border="1" cellpadding="7" cellspacing="7">
+                        <tr>
+                            <th width="30px">Id</th>
+                            <th width="70px">Name</th>
+                            <th width="200px">Rider Message</th>
+                            <th width="200px">Remarks</th>
+                            <th width="150px">Est.Cost</th>
+                            <th>Action</th>
+                        </tr>
+
+                        <% if(data.length){
+
+                            for(var i = 0;i < data.length;i++) { %>
+
+                            <tr valign="top">
+                                <td>
+                                    <%=data[i].ID%>
+                                        <input type="hidden" id="tripid" name="tripid" value="<%=data[i].ID%>">
+                                        <input type="hidden" id="tripid" name="riderid" value="<%=data[i].RiderId%>">
+                                </td>
+                                <td>
+                                    <%=data[i].DriverName%>
+                                </td>
+                                <td>
+                                    <%=data[i].RiderMsg%>
+                                </td>
+                                <td>
+                                    <%=data[i].Remarks%>
+                                </td>
+                                <td>
+                                    <%=data[i].EstTravelCost%>
+                                </td>
+                                <td>
+                                    <!--<a class="a-inside edit" href="showrider.ejs">Save</a>-->
+                                    <input type="submit" class="btn btn-danger btn-block" value="Accept" id="btnsubmit">
+                                </td>
+                            </tr>
+                            <% }
+
+                        }else{ %>
+                                <tr>
+                                    <td colspan="6">No Accepts</td>
+                                </tr>
+                                <% } %>
+                    </table>
+                </div>
+            </form>
+        </div>
+        <div id="googleMap"></div>
+    </div>
+</body>
+
+</html>
+<script src="/../js/jquery-1.11.1.min.js"></script>
+<script src="../js/jquery.datetimepicker.full.js"></script>
+<script src="/../js/jquery-ui.min.js"></script>
+<script type="text/javascript">
+    var car = "M17.402,0H5.643C2.526,0,0,3.467,0,6.584v34.804c0,3.116,2.526,5.644,5.643,5.644h11.759c3.116,0,5.644-2.527,5.644-5.644 V6.584C23.044,3.467,20.518,0,17.402,0z M22.057,14.188v11.665l-2.729,0.351v-4.806L22.057,14.188z M20.625,10.773 c-1.016,3.9-2.219,8.51-2.219,8.51H4.638l-2.222-8.51C2.417,10.773,11.3,7.755,20.625,10.773z M3.748,21.713v4.492l-2.73-0.349 V14.502L3.748,21.713z M1.018,37.938V27.579l2.73,0.343v8.196L1.018,37.938z M2.575,40.882l2.218-3.336h13.771l2.219,3.336H2.575z M19.328,35.805v-7.872l2.729-0.355v10.048L19.328,35.805z";
+    //var colors = ["#38c6f3", "#ff4864", "#428bca", "#166048", "#ff0000", "#512411", "#e3af0c"];
+    function initMap() {
+        //timeStamp1 = new Date();
+        var mapProp = {
+            center: new google.maps.LatLng(42.291707,-85.587229),
+            zoom: 14,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            panControl: false,
+            zoomControl: false,
+            scaleControl: false,
+            mapTypeControl: false,
+            streetViewControl: false,
+            overviewMapControl: false,
+            rotateControl: false,
+            fullscreenControl: false
+        };
+
+        map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+
+        var markerImageRed = {
+            path: car,
+            //url: 'images/ic_sedan_topview.png',
+            scaledSize: new google.maps.Size(30, 60), // size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(10, 25), // anchor
+            rotation: 0,
+            fillColor: "#ff0000",
+            fillOpacity: 1,
+            scale: .4,
+            //strokeColor: "#606060",
+            strokeOpacity: .7
+        };
+
+        var markerImageGreen = {
+            path: car,
+            //url: 'images/ic_sedan_topview.png',
+            scaledSize: new google.maps.Size(30, 60), // size
+            origin: new google.maps.Point(0, 0), // origin
+            anchor: new google.maps.Point(10, 25), // anchor
+            rotation: 0,
+            fillColor: "#166048",
+            fillOpacity: 1,
+            scale: .4,
+            //strokeColor: "#606060",
+            strokeOpacity: .7
+        };
+
+        //debugger;
+        var coordinates = JSON.parse($('body').attr('data-locations'));
+        //$('#id').val($('body').attr('data-id'));
+        if (coordinates[0].length > 0) {
+            for (var i = 0; i <= coordinates[0].length - 1; i++) {
+                var Point = new google.maps.LatLng(coordinates[0][i].Location.split(',')[0], coordinates[0][i].Location.split(',')[1]);
+                var Marker = new google.maps.Marker({
+                    draggable: false,
+                    map: map
+                });
+                Marker.setPosition(Point);
+                if(coordinates[0][i].DriverId != null)
+                    Marker.setIcon(markerImageGreen);
+                else
+                    Marker.setIcon(markerImageRed);
+            }
+        }
+    }
+
+    var qsParm = new Array();
+
+    function qs() {
+        debugger;
+        var query = window.location.pathname.substring(1);
+        var parms = query.split('/');
+        /*for (var i = 0; i < parms.length; i++) {
+            var pos = parms[i].indexOf('=');
+            if (pos > 0) {
+                var key = parms[i].substring(0, pos);
+                var val = parms[i].substring(pos + 1);
+                qsParm[key] = val;
+            }
+        }*/
+        if (parms.length > 0) {
+            $("#id").val(parms[parms.length - 1]);
+            return true;
+        } else {
+            //window.location.href = 'VisitorRequest.html';
+            return false;
+        }
+    }
+
+    $(document).ready(function() {
+        qs();
+        //alert($('#id').val());
+        $('#datetime').datetimepicker({
+            mask: '99/99/9999 99:99'
+            //inline: true
+        });
+    });
+
+</script>
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAvCB0fJALK-4VaEiubgiVYuh-pJxNGvH0&callback=initMap&libraries=geometry,drawing" async defer></script>
